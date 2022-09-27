@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">TrialPointsChart</string>
+
+    <string name="main_info_text">Введите количество точек для построения графика</string>
+    <string name="main_point_count_input_hint">Количество точек</string>
+    <string name="main_point_count_input_error">Требуется число от 1 до 1000</string>
+    <string name="main_start_button_text">Поехали</string>
+
+    <string name="chart_data_loading_network_error">Ошибка соединения</string>
+    <string name="chart_data_loading_server_error">Ошибка сервера</string>
+    <string name="chart_data_loading_generic_error">Произошла ошибка</string>
+    <string name="chart_data_loading_retry_btn">Повторить</string>
+    <string name="chart_caption_x">X</string>
+    <string name="chart_caption_y">Y</string>
+
+    <string name="fmt_save_chart_success">График сохранен как %s</string>
+    <string name="save_chart_error"> Не удалось созранить график</string>
+</resources>

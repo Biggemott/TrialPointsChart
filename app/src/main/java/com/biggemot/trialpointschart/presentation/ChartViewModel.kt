@@ -1,7 +1,6 @@
 package com.biggemot.trialpointschart.presentation
 
 import android.graphics.Bitmap
-import android.os.Environment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,14 +14,7 @@ import com.biggemot.trialpointschart.utils.SingleLiveEvent
 import com.github.mikephil.charting.data.Entry
 import com.haroldadmin.cnradapter.NetworkResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.io.File
-import java.io.FileOutputStream
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,12 +22,6 @@ class ChartViewModel @Inject constructor(
     private val interactor: ChartInteractor,
     private val pointModelMapper: Mapper<PointEntity, PointModel>
 ) : ViewModel() {
-
-    companion object {
-        private const val CHART_FILE_DATE_FORMAT = "yyyyMMdd_HHmmss"
-        private const val CHART_FILE_PREFIX = "chart"
-        private const val CHART_FILE_EXT = "jpeg"
-    }
 
     private val _uiState = MutableLiveData<UiState>()
     val uiState: LiveData<UiState>
@@ -97,26 +83,11 @@ class ChartViewModel @Inject constructor(
     }
 
     private fun saveChartToFile(bitmap: Bitmap) {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val timestamp = SimpleDateFormat(CHART_FILE_DATE_FORMAT, Locale.ROOT).format(Date())
-                val fileName = "${CHART_FILE_PREFIX}_$timestamp"
-
-                val directory: File =
-                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                val file = File(directory, "$fileName.${CHART_FILE_EXT}")
-
-                val fileOutputStream = FileOutputStream(file)
-
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream)
-                fileOutputStream.close()
-
-                _saveChartResult.postValue(SaveChartResult.Success(fileName))
-            } catch (e: Exception) {
-                Timber.e(e)
-
-                _saveChartResult.postValue(SaveChartResult.Error)
-            }
+        viewModelScope.launch {
+            val fileName = interactor.saveChartToFile(bitmap)
+            _saveChartResult.postValue(
+                fileName?.let { SaveChartResult.Success(it) } ?: SaveChartResult.Error
+            )
         }
     }
 
